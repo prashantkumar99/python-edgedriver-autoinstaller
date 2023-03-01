@@ -93,17 +93,19 @@ def check_version(binary, required_version):
     return False
 
 
-def get_edge_version():
+def get_edge_version(edge_path = '/Applications/Microsoft Edge.app'):
     """
+    :param edge: Path to the edge executable on macOS
     :return: the version of edge installed on client
     """
+    edge_path = os.path.abspath(edge_path)
+    edge_name, _ = os.path.splitext(os.path.basename(edge_path))
     platform, _ = get_platform_architecture()
     if platform == 'linux':
         return  # Edge for linux still doesn't exists
     elif platform == 'mac':
-        # TODO: FIX THIS
-        process = subprocess.Popen(['/Applications/Google edge.app/Contents/MacOS/Google edge', '--version'], stdout=subprocess.PIPE)
-        version = process.communicate()[0].decode('UTF-8').replace('Google edge', '').strip()
+        process = subprocess.Popen([edge_path + '/Contents/MacOS/' + edge_name, '--version'], stdout=subprocess.PIPE)
+        version = process.communicate()[0].decode('UTF-8').replace(edge_name, '').strip()
     elif platform == 'win':
         process = subprocess.Popen(
             ['reg', 'query', 'HKEY_CURRENT_USER\\Software\\Microsoft\\Edge\\BLBeacon', '/v', 'version'],
