@@ -61,7 +61,7 @@ def get_edgedriver_url(version):
     :param version: edgedriver version string
     :return: Download URL for edgedriver
     """
-    base_url = 'https://msedgedriver.azureedge.net//'
+    base_url = 'https://msedgedriver.azureedge.net/'
     platform, architecture = get_platform_architecture()
     return base_url + version + '/edgedriver_' + platform + architecture + '.zip'
 
@@ -132,8 +132,11 @@ def get_matched_edgedriver_version(version):
     """
     doc = requests.get('https://msedgedriver.azureedge.net/', headers={'accept-encoding': 'gzip, deflate, br'}).text
     root = elemTree.fromstring(doc)
+    platform, architecture = get_platform_architecture()
     for k in root.iter('Name'):
-        if k.text.find(get_major_version(version) + '.') == 0:
+        name = k.text
+        if name.find(get_major_version(version) + '.') == 0\
+                and name.endswith('edgedriver_' + platform+architecture + '.zip'):
             return k.text.split('/')[0]
     return
 
